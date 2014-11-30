@@ -1,13 +1,14 @@
 setwd("/Users/akshaykulkarni/Documents/gp/CTR-Prediction")
 library(caret)
 library(gmp)
+library(data.table)
 
-train_file    <- 'SampleTrain.txt'
-test_file     <- 'SampleTest.txt'
+train_file    <- 'train.txt'
+test_file     <- 'test.txt'
 req_cols      <- c("hour","C1","banner_pos","device_type","device_conn_type","C14","C15","C16","C17","C18","C19","C20","C21")
 output_file   <-  'analysis-output.txt'
 
-input         <- read.csv(file=train_file,head=TRUE,sep=",")
+input         <- as.data.frame(fread(train_file,head=TRUE,sep=","))
 inputdata     <- input[,c("click",req_cols)]
 
 inTrain       <- createDataPartition(y=inputdata$click,p=0.7,list=FALSE)
@@ -31,7 +32,7 @@ glmCorrect    <- sum(predglmcv == cv$click)
 
 if(rfCorrect > glmCorrect) best_model  <- rfmodel else best_model  <- glmmodel
 
-testing       <- read.csv(file=test_file,head=TRUE,sep=",")
+testing       <- as.data.frame(fread(test_file,head=TRUE,sep=","))
 testingAdId   <- as.bigz(testing[,1])
 testData      <- testing[,req_cols]
 num_testData  <- dim(testData)[1]
